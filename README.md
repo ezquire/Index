@@ -1,4 +1,5 @@
 # Index
+[![Build Status](https://travis-ci.com/ezquire/Index.svg?branch=master)](https://travis-ci.com/ezquire/Index)
 
 A simple index implemented using a Binary Search Tree and a 2-3 Tree
 
