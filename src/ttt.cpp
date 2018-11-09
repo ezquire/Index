@@ -108,30 +108,74 @@ void TTT::insertHelper(const string& x, int line, node*& t, int& distWord) {
 	    t = new node(x, "", NULL, NULL, NULL);
 	    t->lines.push_back(line);
 	    distWord++;
+		return;
     }
-    else {
-		// Always fill in this direction: left k1k2 , center k1k2 , right k1k2
-		/* Cases:
-		   1. leaf is not full - find correct node, insert key, if key < key1 
-		      move key to key2, key1 = key, else key2 = key
-		   2. leaf is full but parent is not - insert key in new right child, 
-		      promote key2 from center child to parent
-		   3. both leaf and parent are full - the median(key, key1, key2) is
-		      promoted to a parent, the min of the leftover keys becomes the 
-			  left child, the max of them becomes the right child if the 
-			  parent is full the process is called recursively on the parent 
-			  until it is not full
-		*/  
-		/*		if (x.compare(t->key1) > 0)
-			insertHelper(x, line, t->right, distWord);
-        //If word is already in tree, then add the line the inserted word
-        //came from the the nodes lines vector
-		else if (x.compare(t->key) == 0)
-			t->lines.push_back(line);
-		else
-		insertHelper(x, line, t->left, distWord);*/
+	// Always fill in this direction: left k1k2 , center k1k2 , right k1k2
+	/* Cases:
+	   1. leaf is not full - find correct node, insert key, if key < key1 
+	   move key1 to key2, key1 = key, else key2 = key
+	   2. leaf is full but parent is not - insert key in new right child, 
+	   promote key2 from center child to parent
+	   3. both leaf and parent are full - the median(key, key1, key2) is
+	   promoted to a parent, the min of the leftover keys becomes the 
+	   left child, the max of them becomes the right child if the 
+	   parent is full the process is called recursively on the parent 
+	   until it is not full
+	*/
+    else if (t->left == NULL) { // t is a leaf node
+		if (t->key2 == "") { // node is a 2 node
+			if (x.compare(t->key1) < 0) {//x < key1 move key1 to key2, key1 = x
+				t->key2 = t->key1;
+				t->key1 = x;
+			}
+			else if(x.compare(t->key1) > 0) //x > key1, key2 = x
+				t->key2 = x;
+			else // The word exists, push the additional line number
+				t->lines.push_back(line);			
+			return;
+		}
+		else { // t is a 3 node, it will overflow, promote the median
+
+			node* xNode = new node(x, "", NULL, NULL, NULL);
+			node* temp = new node("", "", NULL, NULL, NULL);
+			node* tempL = new node(t->key1, "", NULL, NULL, NULL);
+			node* tempR = new node(t->key2, "", NULL, NULL, NULL);
+
+			if(x.compare(t->key1) == 0 || x.compare(t->key2) == 0)
+				t->lines.push_back(line); // the word already exists
 			
-	} 
+			else if(x.compare(t->key1) > 0) {// either x or key2 are the median
+				if(x.compare(t->key2) < 0) { // x is the median
+					xNode->left = tempL;
+					xNode->center = tempR;
+					t = xNode;
+					delete xNode;
+					return;
+				}
+				else { // key2 is the median, promote key2
+					temp->key1 = t->key2;
+					temp->left = tempL;
+					temp->center = xNode;
+					t = temp;
+					delete temp;
+					return;
+				}
+			}
+			else { // x is < key1 so key1 is the median, promote key1
+				temp->key1 = t->key1;
+				temp->left = xNode;
+				temp->center = tempR;
+				t = temp;
+				delete temp;
+				return;
+			}
+		}
+	}
+	else { // non leaf node
+		return;
+	}
+	
+	return;
 }
 
 //Used by contains() to see if a words is present or not. Will
