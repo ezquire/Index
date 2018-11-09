@@ -9,4 +9,4 @@ index : $(obj)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean :
-	rm index *~ *.o
+	rm index *~ src/*.o
