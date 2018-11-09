@@ -31,7 +31,7 @@ class TTT {
 		vector<int> lines;
 	};
 	node* root;
-	void insertHelper(const string& x, const string& y, int line, node*& t, int& distWords);
+	void insertHelper(const string& x, int line, node*& t, int& distWords);
 	bool containsHelper(const string& x, node* t, node*& result) const;
 	void printTreeHelper(node* t, ostream& out) const;
 	int findHeight(node* t);

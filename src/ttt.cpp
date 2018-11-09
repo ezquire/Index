@@ -69,7 +69,7 @@ void TTT::buildTree(ifstream & input){
 					//Once word is formatted,call insert with the word,
 					//the line of the input file it came from, the root of our
 					// tree, and the distinct word counter
-					insertHelper(tempWord, "", line, root, distWords);
+					insertHelper(tempWord, line, root, distWords);
 					//Increment our total number of words inserted
 					numWords++;
 					//Clear out tempWord so we can use it again
@@ -103,9 +103,9 @@ void TTT::buildTree(ifstream & input){
 //the word was found at, node is the node of the tree being
 //examined, and distWord is incremented if a new word is created
 //and used by buildTree
-void TTT::insertHelper(const string& x, const string& y, int line, node*& t, int& distWord) {
+void TTT::insertHelper(const string& x, int line, node*& t, int& distWord) {
     if(t == NULL){
-	    t = new node(x, y, NULL, NULL, NULL);
+	    t = new node(x, "", NULL, NULL, NULL);
 	    t->lines.push_back(line);
 	    distWord++;
     }/*
