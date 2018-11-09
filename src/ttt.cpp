@@ -108,19 +108,30 @@ void TTT::insertHelper(const string& x, int line, node*& t, int& distWord) {
 	    t = new node(x, "", NULL, NULL, NULL);
 	    t->lines.push_back(line);
 	    distWord++;
-    }/*
-	   need to implement this
+    }
     else {
-		if (x.compare(t->key) > 0)
+		// Always fill in this direction: left k1k2 , center k1k2 , right k1k2
+		/* Cases:
+		   1. leaf is not full - find correct node, insert key, if key < key1 
+		      move key to key2, key1 = key, else key2 = key
+		   2. leaf is full but parent is not - insert key in new right child, 
+		      promote key2 from center child to parent
+		   3. both leaf and parent are full - the median(key, key1, key2) is
+		      promoted to a parent, the min of the leftover keys becomes the 
+			  left child, the max of them becomes the right child if the 
+			  parent is full the process is called recursively on the parent 
+			  until it is not full
+		*/  
+		/*		if (x.compare(t->key1) > 0)
 			insertHelper(x, line, t->right, distWord);
         //If word is already in tree, then add the line the inserted word
         //came from the the nodes lines vector
 		else if (x.compare(t->key) == 0)
 			t->lines.push_back(line);
 		else
-			insertHelper(x, line, t->left, distWord);
+		insertHelper(x, line, t->left, distWord);*/
 			
-			}*/
+	} 
 }
 
 //Used by contains() to see if a words is present or not. Will
