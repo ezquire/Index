@@ -18,18 +18,18 @@ bool TTT::isEmpty(){
 //Used to implement the search function in the main
 //program.
 void TTT::contains() const{
-	string input;
-	node *foundNode = NULL;
-	cout << "Search word: ";
+	//string input;
+	//node *foundNode = NULL;
+	/*cout << "Search word: ";
 	cin >> input;
 	if(containsHelper(input, root, foundNode)){
-	    cout << "Line Numbers: " << foundNode->lines[0];
-	    for(unsigned i = 1; i < foundNode->lines.size(); i++)
-			cout << ", " <<foundNode->lines[i]; 
+	    cout << "Line Numbers: " << foundNode->lval[0]; // need to change this
+	    for(unsigned i = 1; i < foundNode->lval.size(); i++)
+			cout << ", " <<foundNode->lval[i]; 
 	    cout << '\n';
 	}
 	else
-	    cout << '\"' << input <<"\" is not in the document\n";
+	cout << '\"' << input <<"\" is not in the document\n";*/
 }
 
 //Prints the index to the supplied receiver, either
@@ -105,8 +105,8 @@ void TTT::buildTree(ifstream & input){
 //and used by buildTree
 void TTT::insertHelper(const string& x, int line, node*& t, int& distWord) {
     if(t == NULL){
-	    t = new node(x, "", NULL, NULL, NULL);
-	    t->lines.push_back(line);
+	    t = new node(x, "", NULL, NULL, NULL, NULL);
+	    t->lval->push_back(line);
 	    distWord++;
 		return;
     }
@@ -121,60 +121,27 @@ void TTT::insertHelper(const string& x, int line, node*& t, int& distWord) {
 	   left child, the max of them becomes the right child if the 
 	   parent is full the process is called recursively on the parent 
 	   until it is not full
-	*/
-    else if (t->left == NULL) { // t is a leaf node
-		if (t->key2 == "") { // node is a 2 node
-			if (x.compare(t->key1) < 0) {//x < key1 move key1 to key2, key1 = x
-				t->key2 = t->key1;
-				t->key1 = x;
+	
+	if(isLeaf(t)) { // leaf node
+		if(hasRoom(t)) { // only one key in the node
+			if(x.compare(t->lkey) < 0) { // x is less than the current key
+				t->rkey = t->lkey;
+				t->lkey = x;
 			}
-			else if(x.compare(t->key1) > 0) //x > key1, key2 = x
-				t->key2 = x;
-			else // The word exists, push the additional line number
-				t->lines.push_back(line);			
+			else if(x.compare(t->lkey) > 0) { // x is > than the current key
+				t->rkey = x;
+			}
+			else // key already exists
+				t->lval->push_back(line);
 			return;
 		}
-		else { // t is a 3 node, it will overflow, promote the median
-
-			node* xNode = new node(x, "", NULL, NULL, NULL);
-			node* temp = new node("", "", NULL, NULL, NULL);
-			node* tempL = new node(t->key1, "", NULL, NULL, NULL);
-			node* tempR = new node(t->key2, "", NULL, NULL, NULL);
-
-			if(x.compare(t->key1) == 0 || x.compare(t->key2) == 0)
-				t->lines.push_back(line); // the word already exists
-			
-			else if(x.compare(t->key1) > 0) {// either x or key2 are the median
-				if(x.compare(t->key2) < 0) { // x is the median
-					xNode->left = tempL;
-					xNode->center = tempR;
-					t = xNode;
-					delete xNode;
-					return;
-				}
-				else { // key2 is the median, promote key2
-					temp->key1 = t->key2;
-					temp->left = tempL;
-					temp->center = xNode;
-					t = temp;
-					delete temp;
-					return;
-				}
-			}
-			else { // x is < key1 so key1 is the median, promote key1
-				temp->key1 = t->key1;
-				temp->left = xNode;
-				temp->center = tempR;
-				t = temp;
-				delete temp;
+		else { // more than one key in the node check if parent has room  
+			if(t->parent != NULL && hasRoom(t->parent)) {
+				//node *newR = new node*("", "", NULL, NULL, NULL, NULL);
 				return;
 			}
 		}
-	}
-	else { // non leaf node
-		return;
-	}
-	
+		}*/
 	return;
 }
 
