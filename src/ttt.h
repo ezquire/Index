@@ -19,14 +19,14 @@ class TTT {
 	void buildTree(ifstream &input);
  private:
 	struct node {
-	node(const string &x, const string &y, node *l, node *r, node *c, node *p)
-	:lkey(x), rkey(y), left(l), right(r), center(c), parent(p){
+		node(const string &lk, const string &rk, vector<int> *lv, vector<int> *rv, node *l, node *c, node *r)
+		:lkey(lk), rkey(rk), lval(lv), rval(rv), left(l), center(c), right(r){
 		lval->resize(0);
 		rval->resize(0);
 	}
 		string lkey, rkey;
-		node *left, *right, *center, *parent;
 		vector<int> *lval, *rval;
+		node *left, *center, *right;	
 	};
 	node* root;
 	node* lchild(node *t) { return t->left; }
@@ -44,6 +44,7 @@ class TTT {
 	void setrchild(node *t, node *other) { t->right = other; }
 	void setcchild(node *t, node *other) { t->center = other; }
 	void insertHelper(const string &x, int line, node *&t, int &distWords);
+	void add(node *t);
 	bool isLeaf(node *t) { return t->left == NULL; }
 	//bool hasRoom(node *t) { return t->rkey == ""; }
 	bool containsHelper(const string &x, node *t, node *&result) const;

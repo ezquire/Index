@@ -103,15 +103,15 @@ void TTT::buildTree(ifstream & input){
 //the word was found at, node is the node of the tree being
 //examined, and distWord is incremented if a new word is created
 //and used by buildTree
-void TTT::insertHelper(const string& x, int line, node*& t, int& distWord) {
-    if(t == NULL){
-	    t = new node(x, "", NULL, NULL, NULL, NULL);
+void TTT::insertHelper(const string& x, int line, node *&t, int& distWord) {
+	if(t == NULL){
+	    t = new node(x, "", NULL, NULL, NULL, NULL, NULL);
 	    t->lval->push_back(line);
 	    distWord++;
-		return;
     }
+	/*
 	// Always fill in this direction: left k1k2 , center k1k2 , right k1k2
-	/* Cases:
+	Cases:
 	   1. leaf is not full - find correct node, insert key, if key < key1 
 	   move key1 to key2, key1 = key, else key2 = key
 	   2. leaf is full but parent is not - insert key in new right child, 
@@ -121,30 +121,72 @@ void TTT::insertHelper(const string& x, int line, node*& t, int& distWord) {
 	   left child, the max of them becomes the right child if the 
 	   parent is full the process is called recursively on the parent 
 	   until it is not full
-	
-	if(isLeaf(t)) { // leaf node
-		if(hasRoom(t)) { // only one key in the node
-			if(x.compare(t->lkey) < 0) { // x is less than the current key
-				t->rkey = t->lkey;
-				t->lkey = x;
-			}
-			else if(x.compare(t->lkey) > 0) { // x is > than the current key
-				t->rkey = x;
-			}
-			else // key already exists
-				t->lval->push_back(line);
-			return;
-		}
-		else { // more than one key in the node check if parent has room  
-			if(t->parent != NULL && hasRoom(t->parent)) {
-				//node *newR = new node*("", "", NULL, NULL, NULL, NULL);
-				return;
-			}
-		}
-		}*/
-	return;
+	*/
+	if(isLeaf(t)) { // at leaf insert here
+		t = new node(x, "", NULL, NULL, NULL, NULL, NULL);
+		return add(t); // create new node use add function
+	}
+	// add to internal node
+	if(x.compare(lkey(t)) < 0){ // insert left
+		insertHelper(x, line, lchild(t), distWord);
+		if( == lchild(t)) return t;
+		else add(lchild(t));
+	}
+	else if((rkey(t) == "") || (x.compare(rkey(t)) < 0)) {
+		ret = insertHelper(x, line, cchild(t), distWord);
+		if(ret == cchild(t)) return t;
+		else return add(ret);
+	}
+	else { // insert right
+		ret = insertHelper(x, line, rchild(t), distWord);
+		if(ret == rchild(t)) return t;
+		else return add(ret);
+	}
 }
 
+void TTT::add(node *t) {
+	if(rkey == "") { // only one key
+		if(lkey.compare(lkey(t)) < 0) {
+			rkey = lkey(t);
+			rval = rval(t);
+			center = lchild(t);
+			right = cchild(t);
+		}
+		else {
+			rkey = lkey;
+			rval = lval;
+			right = center;
+			lkey = lkey(t);
+			lval = lval(t);
+			center = cchild(t);
+		}
+	}
+	else if(lkey.compare(lkey(t)) >= 0) {
+		node* newNode = new node(lkey, "", lval, NULL, t, this, NULL);
+		setlchild(t, left);
+		left = center;
+		center = right;
+		right = NULL;
+		lkey = rkey;
+		lval = rval;
+		rkey = "";
+		rval = NULL;
+	}
+	else if(rkey.compare(lkey(t)) >= 0) {
+		setcchild(t, new node("", rkey, NULL, rval, cchild(t), right, NULL));
+		setlchild(t, this);
+		rkey = "";
+		rval = NULL;
+		right = NULL;
+	}
+	else {
+		node *newNode = new node("", rkey, NULL, rval, this, t, NULL);
+		setlchild(t, right);
+		right = NULL;
+		rkey = "";
+		rval = NULL;
+	}
+}
 //Used by contains() to see if a words is present or not. Will
 //give contains() a pointer to the found node so that contains()
 //can prints the lines the word was found on.
