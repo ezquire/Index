@@ -19,34 +19,44 @@ class TTT {
 	void buildTree(ifstream &input);
  private:
 	struct node {
-		node(const string &lk, const string &rk, vector<int> *lv, vector<int> *rv, node *l, node *c, node *r)
-		:lkey(lk), rkey(rk), lval(lv), rval(rv), left(l), center(c), right(r){
+	private:
+		string lkey;
+		vector<int> *lval;
+		string rkey;
+		vector<int> *rval;
+		node *left, *center, *right;
+		node* insertHelper(const string &x, vector<int> *record, node *t, int &distWords);
+	public:	
+	node(const string &lk, vector<int> *lv, const string &rk, vector<int> *rv, node *l, node *c, node *r)
+	:lkey(lk), lval(lv), rkey(rk), rval(rv), left(l), center(c), right(r){
 		lval->resize(0);
 		rval->resize(0);
 	}
-		string lkey, rkey;
-		vector<int> *lval, *rval;
-		node *left, *center, *right;	
+		node* add(node *t);
+		node* lchild() { return left; }
+		node* rchild() { return right; }
+		node* cchild() { return center; }
+		string getlkey() { return lkey; }
+		string getrkey() { return rkey; }
+		vector<int>* getlval() { return lval; }
+		vector<int>* getrval() { return rval; }
+		void setLeft(const string &x, vector<int> *record) { lkey = x;
+			lval = record; }
+		void setRight(const string &x, vector<int> *record) { rkey = x;
+			rval = record; }
+		void setlkey(const string& k) { lkey = k; }
+		void setrkey(const string& k) { rkey = k; }
+		void setlval(vector<int> *record) { lval = record; }
+		void setrval(vector<int> *record) { rval = record; }
+		void setlchild(node *t) { left = t; }
+		void setrchild(node *t) { right = t; }
+		void setcchild(node *t) { center = t; }
+		bool isLeaf() { return left == NULL; }
+
 	};
 	node* root;
-	node* lchild(node *t) { return t->left; }
-	node* rchild(node *t) { return t->right; }
-	node* cchild(node *t) { return t->center; }
-	string lkey(node *t) { return t->lkey; }
-	string rkey(node *t) { return t->rkey; }
-	vector<int>* lval(node *t) { return t->lval; }
-	vector<int>* rval(node *t) { return t->rval; }
-	void setLeft(const string &x, vector<int> *record, node *t) { t->lkey = x;
-		t->lval = record; }
-	void setRight(const string &x, vector<int> *record, node *t) { root->rkey
-			= x; t->rval = record; }
-	void setlchild(node *t, node *other) { t->left = other; }
-	void setrchild(node *t, node *other) { t->right = other; }
-	void setcchild(node *t, node *other) { t->center = other; }
-	void insertHelper(const string &x, int line, node *&t, int &distWords);
-	void add(node *t);
-	bool isLeaf(node *t) { return t->left == NULL; }
-	//bool hasRoom(node *t) { return t->rkey == ""; }
+	node* insertHelper(const string &x, vector<int> *record, node *t, int &distWords);
+	node* add(node *t);
 	bool containsHelper(const string &x, node *t, node *&result) const;
 	void printTreeHelper(node *t, ostream &out) const;
 	int findHeight(node *t);
