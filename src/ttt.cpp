@@ -44,7 +44,6 @@ void TTT::printTree(ostream & out) const {
 void TTT::buildTree(ifstream & input){
 	int line = 1, numWords = 0, distWords = 0, treeHeight = 0;
 	vector<int> *lines = {0};
-	lines->resize(0);
 	stringstream tempWord;
 	double totalTime, finishTime, startTime = clock();
 	while (!input.eof()) {
@@ -71,7 +70,7 @@ void TTT::buildTree(ifstream & input){
 					//Once word is formatted,call insert with the word,
 					//the line of the input file it came from, the root of our
 					// tree, and the distinct word counter
-					lines->push_back(line);
+					//lines->push_back(line);
 					insertHelper(tempWord, lines, root, distWords);
 					//Increment our total number of words inserted
 					numWords++;
@@ -110,7 +109,7 @@ TTT::node* TTT::insertHelper(const string& x, vector<int>* record, node *t, int&
 	node *ret;
 	if(t == NULL){
 		distWord++;
-		return new node(x, record, NULL, NULL, NULL, NULL, NULL);
+		return new node(x, record, "", NULL, NULL, NULL, NULL);
     }
 	/*
 	// Always fill in this direction: left k1k2 , center k1k2 , right k1k2
@@ -126,7 +125,7 @@ TTT::node* TTT::insertHelper(const string& x, vector<int>* record, node *t, int&
 	   until it is not full
 	*/
 	if(t->isLeaf()) { // at leaf insert here
-		return add(new node(x, record, NULL, NULL, NULL, NULL, NULL));
+		return add(new node(x, record, "", NULL, NULL, NULL, NULL));
 	}
 	// add to internal node
 	if(x.compare(t->getlkey()) < 0){ // insert left
@@ -171,7 +170,7 @@ TTT::node* TTT::add(node *t) {
 		return root;
 	}
 	else if(root->getlkey().compare(t->getlkey()) >= 0) { // Add left
-		node* newNode = new node(root->getlkey(), root->getlval(),  NULL, NULL,
+		node* newNode = new node(root->getlkey(), root->getlval(),  "", NULL,
 								 t, root, NULL);
 		t->setlchild(root->lchild());
 		root->setlchild(root->cchild());
@@ -184,7 +183,7 @@ TTT::node* TTT::add(node *t) {
 		return newNode;
 	}
 	else if(root->getrkey().compare(t->getlkey()) >= 0) { // Add center
-		t->setcchild(new node(root->getrkey(), root->getrval(), NULL, NULL, t->cchild(), root->rchild(), NULL));
+		t->setcchild(new node(root->getrkey(), root->getrval(), "", NULL, t->cchild(), root->rchild(), NULL));
 		t->setlchild(root);
 		root->setrkey("");
 		root->setrval(NULL);
@@ -192,7 +191,7 @@ TTT::node* TTT::add(node *t) {
 		return t;
 	}
 	else { // Add right
-		node *newNode = new node(t->getrkey(), t->getrval(), NULL, NULL, root, t, NULL);
+		node *newNode = new node(t->getrkey(), t->getrval(), "", NULL, root, t, NULL);
 		t->setlchild(root->rchild());
 		root->setrchild(NULL);
 		root->setrkey("");

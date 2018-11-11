@@ -29,8 +29,6 @@ class TTT {
 	public:	
 	node(const string &lk, vector<int> *lv, const string &rk, vector<int> *rv, node *l, node *c, node *r)
 	:lkey(lk), lval(lv), rkey(rk), rval(rv), left(l), center(c), right(r){
-		lval->resize(0);
-		rval->resize(0);
 	}
 		node* add(node *t);
 		node* lchild() { return left; }
