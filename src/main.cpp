@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
 						break;
 					}
 					case 4:
-						break;
+						exit(1);
 					default:
 						break;
 					}

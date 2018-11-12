@@ -21,13 +21,15 @@ class TTT {
 	struct node {
 	private:
 		string lkey;
-		vector<int> *lval;
+		vector<int> lval;
 		string rkey;
-		vector<int> *rval;
+		vector<int> rval;
 		node *left, *center, *right;
-		node* insertHelper(const string &x, vector<int> *record, node *t, int &distWords);
+		node* insertHelper(const string &x, vector<int> &lv, vector<int> &rv,
+						   node *t, int line, int &distWords);
 	public:	
-	node(const string &lk, vector<int> *lv, const string &rk, vector<int> *rv, node *l, node *c, node *r)
+	node(const string &lk, vector<int> lv, const string &rk, vector<int> &rv,
+		 node *l, node *c, node *r)
 	:lkey(lk), lval(lv), rkey(rk), rval(rv), left(l), center(c), right(r){
 	}
 		node* add(node *t);
@@ -36,16 +38,16 @@ class TTT {
 		node* cchild() { return center; }
 		string getlkey() { return lkey; }
 		string getrkey() { return rkey; }
-		vector<int>* getlval() { return lval; }
-		vector<int>* getrval() { return rval; }
-		void setLeft(const string &x, vector<int> *record) { lkey = x;
+		vector<int> getlval() { return lval; }
+		vector<int> getrval() { return rval; }
+		void setLeft(const string &x, vector<int> record) { lkey = x;
 			lval = record; }
-		void setRight(const string &x, vector<int> *record) { rkey = x;
+		void setRight(const string &x, vector<int> record) { rkey = x;
 			rval = record; }
 		void setlkey(const string& k) { lkey = k; }
 		void setrkey(const string& k) { rkey = k; }
-		void setlval(vector<int> *record) { lval = record; }
-		void setrval(vector<int> *record) { rval = record; }
+		void setlval(vector<int> record) { lval = record; }
+		void setrval(vector<int> record) { rval = record; }
 		void setlchild(node *t) { left = t; }
 		void setrchild(node *t) { right = t; }
 		void setcchild(node *t) { center = t; }
@@ -53,7 +55,8 @@ class TTT {
 
 	};
 	node* root;
-	node* insertHelper(const string &x, vector<int> *record, node *t, int &distWords);
+	node* insertHelper(const string &x, vector<int> &lv, vector<int> &rv,
+					   node *t, int line, int &distWords);
 	node* add(node *t);
 	bool containsHelper(const string &x, node *t, node *&result) const;
 	void printTreeHelper(node *t, ostream &out) const;

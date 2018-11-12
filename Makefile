@@ -1,4 +1,4 @@
-CXXFLAGS = -g -Wall -Werror -pedantic -std=c++11
+CXXFLAGS = -g -Wall -Werror -pedantic
 
 src = $(wildcard src/*.cpp)
 obj = $(src:.cpp=.o)
