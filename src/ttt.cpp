@@ -105,61 +105,70 @@ void TTT::buildTree(ifstream & input){
 //the word was found at, node is the node of the tree being
 //examined, and distWord is incremented if a new word is created
 //and used by buildTree
-TTT::node* TTT::insertHelper(const string &x, node *t, int line,
+TTT::node* TTT::insertHelper(const string &x, node *&t, int line,
 							 int &distWord) {
 	node *ret;
-	vector<int> emptyvec = {0};
+	vector<int> emptyvec;
 	const string nullstring = "";
 	
 	if(t == NULL) {
 		vector<int> newRecord;
 		newRecord.push_back(line);
 		//cout << "newRecord[0]: " << newRecord[0] << endl;
-		node* newNode = new node(x, newRecord, nullstring, emptyvec,
-								 NULL, NULL, NULL);
+	    t = new node(x, newRecord, nullstring, emptyvec,
+					 NULL, NULL, NULL);
 		//cout << "lval[0]: " << newNode->lval[0] << endl;
 		//cout << "hit here\n";
 		distWord++;
-		return newNode;
+		return t;
     }
-	else if(t->isLeaf()) // at leaf insert here
-		return add(new node(x, t->lval, nullstring, emptyvec,
-							NULL, NULL, NULL));
-	// add to internal node
-    else if(x.compare(t->lkey) < 0) { // insert left
-		ret = insertHelper(x, t->left, line, distWord);
-		if(ret == t->left)
-			return t;
-		else return add(ret);
-	}
-	else if((t->rkey == "") || (x.compare(t->rkey) < 0)) { // insert center
-		ret = insertHelper(x, t->center, line, distWord);
-		if(ret == t->center)
-			return t;
-		else return add(ret);
-	}
-	else if(x.compare(t->lkey) > 0) { // insert right
-		ret = insertHelper(x, t->right, line, distWord);
-		if(ret == t->right)
-			return t;
-		else return add(ret);
-	}
-	else {
-		t->lval.push_back(line);
+	else if(t->isLeaf()) { // at leaf insert here
+		t = add(new node(x, t->lval, nullstring, emptyvec,
+						 NULL, NULL, NULL));
 		return t;
 	}
-	
+	else {
+		// add to internal node
+		if(x.compare(t->lkey) < 0) { // insert left
+			ret = insertHelper(x, t->lchild(), line, distWord);
+			if(ret->left == t->lchild())
+				return t;
+			else {
+				t = add(ret);
+				return t;
+			}
+		}
+		else if((t->rkey == "") || (x.compare(t->rkey) < 0)) { // insert center
+			ret = insertHelper(x, t->cchild(), line, distWord);
+			if(ret->left == t->cchild())
+				return t;
+			else {
+				t = add(ret);
+				return t;
+			}
+		}
+		else {
+			ret = insertHelper(x, t->rchild(), line, distWord);
+			if(ret->left == t->rchild())
+				return t;
+			else {
+				t = add(ret);
+				return t;
+			}
+		}
+	}
 }
 
 TTT::node* TTT::add(node *t) {
 	const string nullstring = "";
-	vector<int> emptyvec = {0};
-	if(root->getrkey() == "") { // only one key
-		if(root->getlkey().compare(t->getlkey()) < 0) {
-			root->setrkey(t->getlkey());
-			root->setrval(t->getrval());
-			root->setcchild(t->lchild());
-			root->setrchild(t->cchild());
+	vector<int> emptyvec;
+	if(root->rkey == "") { // only one key
+		if(root->lkey.compare(t->getlkey()) < 0) {
+
+			root->rkey = t->getlkey();
+			root->rval = t->getrval();
+			root->center = t->lchild();
+			root->right = t->cchild();
 		}
 		else {
 			root->setrkey(root->getlkey());
@@ -171,7 +180,7 @@ TTT::node* TTT::add(node *t) {
 		}
 		return root;
 	}
-	else if(root->getlkey().compare(t->getlkey()) > 0) { // Add left
+	else if(root->getlkey().compare(t->getlkey()) >= 0) { // Add left
 		node* newNode = new node(root->getlkey(), root->getlval(),
 								 nullstring, emptyvec, t, root, NULL);
 		t->setlchild(root->lchild());
@@ -184,7 +193,7 @@ TTT::node* TTT::add(node *t) {
 		root->setrval(emptyvec);
 		return newNode;
 	}
-	else if(root->getrkey().compare(t->getlkey()) > 0) { // Add center
+	else if(root->getrkey().compare(t->getlkey()) >= 0) { // Add center
 		t->setcchild(new node(root->getrkey(), root->getrval(), nullstring,
 							  emptyvec, t->cchild(), root->rchild(), NULL));
 		t->setlchild(root);
