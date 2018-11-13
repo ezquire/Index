@@ -18,17 +18,14 @@ class TTT {
 	void printTree(ostream &out = cout) const;
 	void buildTree(ifstream &input);
  private:
-	struct node {
-	private:
+ 	struct node {
 		string lkey;
 		vector<int> lval;
 		string rkey;
 		vector<int> rval;
 		node *left, *center, *right;
-		node* insertHelper(const string &x, vector<int> &lv, vector<int> &rv,
-						   node *t, int line, int &distWords);
-	public:	
-	node(const string &lk, vector<int> lv, const string &rk, vector<int> &rv,
+		node* insertHelper(const string &x, node *t, int line, int &distWords);
+	node(const string &lk, vector<int> lv, const string &rk, vector<int> rv,
 		 node *l, node *c, node *r)
 	:lkey(lk), lval(lv), rkey(rk), rval(rv), left(l), center(c), right(r){
 	}
@@ -55,8 +52,7 @@ class TTT {
 
 	};
 	node* root;
-	node* insertHelper(const string &x, vector<int> &lv, vector<int> &rv,
-					   node *t, int line, int &distWords);
+	node* insertHelper(const string &x, node *t, int line, int &distWords);
 	node* add(node *t);
 	bool containsHelper(const string &x, node *t, node *&result) const;
 	void printTreeHelper(node *t, ostream &out) const;

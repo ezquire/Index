@@ -43,8 +43,6 @@ void TTT::printTree(ostream & out) const {
 //the actual tree. Prints a message when finished.
 void TTT::buildTree(ifstream & input){
 	int line = 1, numWords = 0, distWords = 0, treeHeight = 0;
-	vector<int> lval = {0};
-	vector<int> rval = {0};
 	stringstream tempWord;
 	double totalTime, finishTime, startTime = clock();
 	while (!input.eof()) {
@@ -55,16 +53,16 @@ void TTT::buildTree(ifstream & input){
 		for (unsigned i = 0; i < tempLine.length(); i++) {
 		    //Insert valid chars into tempWord until a delimiter (newline
 			//or space) is found
-		    while (tempLine[i] != ' '&& tempLine[i] != '\n' &&
+			while (tempLine[i] != ' '&& tempLine[i] != '\n' &&
 				   i < tempLine.length() ) {
 				tempWord.insert(tempWord.end(), tempLine[i]);
 				i++;
 		    }
-		   
             //Trim any punctuation off end of word.
 			// Will leave things like apostrophes
             //and decimal points
-            while(tempWord.length() > 0 && !isalnum(tempWord[tempWord.length() - 1]))
+            while(tempWord.length() > 0 &&
+				  !isalnum(tempWord[tempWord.length() - 1]))
 			    tempWord.resize(tempWord.size() -1);   
 			
             if (tempWord.length() > 0)
@@ -73,7 +71,7 @@ void TTT::buildTree(ifstream & input){
 					//the line of the input file it came from, the root of our
 					// tree, and the distinct word counter
 					//lines->push_back(line);
-					insertHelper(tempWord, lval, rval, root, line, distWords);
+					insertHelper(tempWord, root, line, distWords);
 					//Increment our total number of words inserted
 					numWords++;
 					//Clear out tempWord so we can use it again
@@ -107,42 +105,50 @@ void TTT::buildTree(ifstream & input){
 //the word was found at, node is the node of the tree being
 //examined, and distWord is incremented if a new word is created
 //and used by buildTree
-TTT::node* TTT::insertHelper(const string& x, vector<int> &lv, vector<int> &rv,
-							 node *t, int line, int& distWord) {
+TTT::node* TTT::insertHelper(const string &x, node *t, int line,
+							 int &distWord) {
 	node *ret;
+	vector<int> emptyvec = {0};
 	const string nullstring = "";
-	if(t == NULL){
-		lv.push_back(line);
-		cout << "lv[0]: " << lv[0] << endl;
+	
+	if(t == NULL) {
+		vector<int> newRecord;
+		newRecord.push_back(line);
+		//cout << "newRecord[0]: " << newRecord[0] << endl;
+		node* newNode = new node(x, newRecord, nullstring, emptyvec,
+								 NULL, NULL, NULL);
+		//cout << "lval[0]: " << newNode->lval[0] << endl;
+		//cout << "hit here\n";
 		distWord++;
-		return new node(x, lv, nullstring, rv, NULL, NULL, NULL); 
+		return newNode;
     }
-
-	if(t->isLeaf()) { // at leaf insert here
-		return add(new node(x, lv, nullstring, rv, NULL, NULL, NULL));
-	}
+	else if(t->isLeaf()) // at leaf insert here
+		return add(new node(x, t->lval, nullstring, emptyvec,
+							NULL, NULL, NULL));
 	// add to internal node
-	if(x.compare(t->getlkey()) < 0){ // insert left
-		ret = insertHelper(x, lv, rv, t->lchild(), line,  distWord);
-		if( ret == t->lchild())
+    else if(x.compare(t->lkey) < 0) { // insert left
+		ret = insertHelper(x, t->left, line, distWord);
+		if(ret == t->left)
 			return t;
-		else
-			return add(ret);
+		else return add(ret);
 	}
-	else if((t->getrkey() == "") || (x.compare(t->getrkey()) < 0)) {
-		ret = insertHelper(x, lv, rv, t->cchild(), line, distWord);
-		if(ret == t->cchild())
+	else if((t->rkey == "") || (x.compare(t->rkey) < 0)) { // insert center
+		ret = insertHelper(x, t->center, line, distWord);
+		if(ret == t->center)
 			return t;
-		else
-			return add(ret);
+		else return add(ret);
 	}
-	else { // insert right
-		ret = insertHelper(x, lv, rv, t->rchild(), line, distWord);
-		if(ret == t->rchild())
+	else if(x.compare(t->lkey) > 0) { // insert right
+		ret = insertHelper(x, t->right, line, distWord);
+		if(ret == t->right)
 			return t;
-		else
-			return add(ret);
+		else return add(ret);
 	}
+	else {
+		t->lval.push_back(line);
+		return t;
+	}
+	
 }
 
 TTT::node* TTT::add(node *t) {
