@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -19,19 +20,19 @@ class TTT {
 	void buildTree(ifstream &input);
  private:
  	struct node {
+
+		node() { left = center = right = NULL; }
+ 		node(const string &lk, vector<int> lv, const string &rk,
+			 vector<int> rv, node *l, node *c, node *r) {
+			lkey = lk; rkey = rk;
+			lval = lv; rval = rv;
+			left = l; center = c; right = r;
+		}		
 		string lkey;
 		vector<int> lval;
 		string rkey;
 		vector<int> rval;
 		node *left, *center, *right;
-
-		node() { left = center = right = NULL; }
-		node(const string &lk, vector<int> lv, const string &rk,
-			 vector<int> rv, node *l, node *c, node *r) {
-			lkey = lk; rkey = rk;
-			lval = lv; rval = rv;
-			left = l; center = c; right = r;
-		}
 
 		bool isLeaf() { return left == NULL; }
 		node *&lchild() { return left; }
@@ -59,10 +60,7 @@ class TTT {
 
 		node* insertHelper(const string &x, node *&t, int line,
 						   int &distWords);
-
 		node* add(node *t);
-
-		
 
 	};
 	node* root;
