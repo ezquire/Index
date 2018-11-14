@@ -34,7 +34,7 @@ void TTT::contains() const{
 		}
 	    cout << "Line Numbers: " << foundNode->val[0];
 	    for(unsigned i = 1; i < val.size(); i++)
-			cout << ", " << val[i]; 
+			cout << ", " << val[i];
 	    cout << '\n';
 	}
 	else
@@ -248,17 +248,26 @@ bool TTT::containsHelper(const string & x, node * t, node * &result) const{
 
 //Called by printTree(), does the actual formatted printing
 void TTT::printTreeHelper(node *t, ostream & out) const{
-	/*    if(t == NULL)
+	if(t == NULL)
 		return;
+
 	else {
-		printTreeHelper(t->left, out);
+		printTreeHelper(t->lchild, out);
 		out << setw(30) << std::left;
-		out << t->key << " " << t->lines[0];
-		for (unsigned i = 1; i < t->lines.size(); i++)
-			out << ", " << t->lines[i];
+		out << t->lkey << " " << t->lval[0];
+		for (unsigned i = 1; i < t->lval.size(); i++)
+			out << ", " << t->lval[i];
 		out << endl;
-		printTreeHelper(t->right, out);
-		}*/
+		printTreeHelper(t->cchild, out);
+		if (t-rkey != ""){
+		    out << setw(30) << std::left;
+		    out << t->rkey << " " << t->rval[0];
+		    for(unsigned i = 1; i < t->rval.size();i++)
+		        our << ", " << t->rval[i];
+		    out << endl;
+		}
+		printTreeHelper(t->rchild, out);
+	}
 }
 
 //Returns height of tree. If tree has only one node, height is 1    
