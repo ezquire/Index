@@ -1,6 +1,6 @@
 //Description: Takes a text file supplied by the user
 //             and turns it into a word index, implemented
-//             through the use of a BST 
+//             through the use of a BST and TTT
 
 #include <iostream>
 #include <fstream>

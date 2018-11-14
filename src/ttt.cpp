@@ -220,17 +220,21 @@ TTT::node* TTT::add(node *t) {
 //give contains() a pointer to the found node so that contains()
 //can prints the lines the word was found on.
 bool TTT::containsHelper(const string & x, node * t, node * &result) const{
-	/*	if (t == NULL)
+	if (t == NULL)
 		return false;
-	if (t->key.compare(x) == 0){
+	if (t->lkey.compare(x) == 0 || (t->rkey != "" && t->rkey.compare(x) == 0)){
 	    result = t;
  	    return true;
 	}
-	else if (x > t->key)
-		return containsHelper(x, t->right, result);
-	else
-	return containsHelper(x, t->left, result);*/
-	return 1;
+	if (x > t->lkey && (t->rkey == "" || x < t->rkey)) {
+		return containsHelper(x, t->cchild, result);
+	}
+
+	if (t->rkey != "" && x > t->rkey){
+		return containsHelper(x, t->rchild, result);
+	}
+
+	return false;
 }
 
 //Called by printTree(), does the actual formatted printing
