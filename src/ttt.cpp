@@ -71,7 +71,7 @@ void TTT::buildTree(ifstream & input){
 					//the line of the input file it came from, the root of our
 					// tree, and the distinct word counter
 					//lines->push_back(line);
-					insertHelper(tempWord, root, line, distWords);
+					root = insertNode(tempWord, root, line, distWords);
 					//Increment our total number of words inserted
 					numWords++;
 					//Clear out tempWord so we can use it again
@@ -101,47 +101,52 @@ void TTT::buildTree(ifstream & input){
  
 }
 
-//x is the word to insert, line is the line in the text file
-//the word was found at, node is the node of the tree being
-//examined, and distWord is incremented if a new word is created
-//and used by buildTree
-TTT::node* TTT::insertHelper(const string &x, node *&t, int line,
-							 int &distWord) {
-	node *ret;
-	vector<int> emptyvec;
-	emptyvec.resize(0);
-	const string nullstring = "";
-	
-	if(t == NULL) {
-		vector<int> newRecord;
-		newRecord.push_back(line);
-		//cout << "newRecord[0]: " << newRecord[0] << endl;
-	    t = new node(x, newRecord, nullstring, emptyvec,
-					 NULL, NULL, NULL);
-		//cout << "lval[0]: " << newNode->lval[0] << endl;
-		//cout << "hit here\n";
-		distWord++;
+TTT::node* TTT::insertNode(const string &x, node *&t, int line, int &distWord) {
+	key* newKey;
+	if (containsHelper(x, t, newKey)){
+		newKey->lineNumbers.push_back(line);
 		return t;
+	}
+	else {
+		distWord++;
+		key *k = new key(x);
+		k->lineNumbers.push_back(line);
+		return insertKey(k, t);
+	}
+
+}
+
+TTT::node* TTT::insertKey(key *newKey, node *&t) {	
+	node *ret;
+	if(t == NULL) {
+		return new node(newKey, NULL, NULL, NULL);
     }
 	if(t->isLeaf()) { // at leaf insert here
-		t = add(new node(x, t->getlval(), nullstring, emptyvec,
-						 NULL, NULL, NULL));
+		t = add(new node(newKey, NULL, NULL, NULL));
 		return t;
 	}
 	// add to internal node
-	if(x.compare(t->getlkey()) < 0) { // insert left
-		ret = insertHelper(x, t->lchild(), line, distWord);
-		if(ret == t->lchild())
+	if(newKey->word.compare(t->lkey->word) < 0) { // insert left
+		ret = insertKey(newKey, t->left);
+		if(ret == t->left)
 			return t;
 		else {
 			t = add(ret);
 			return t;
 		}
 	}
-	else if((t->getrkey() == "") || (x.compare(t->getrkey()) < 0)) {
-		// insert center
-		ret = insertHelper(x, t->cchild(), line, distWord);
-		if(ret == t->cchild())
+	else if(t->rkey == NULL) {
+		ret = insertKey(newKey, t->right);
+		if(ret == t->right)
+			return t;
+		else {
+			t = add(ret);
+			return t;
+		}
+	}
+	else if(newKey->word.compare(t->rkey->word) < 0) {
+		ret = insertKey(newKey, t->center);
+		if(ret == t->center)
 			return t;
 		else {
 			t = add(ret);
@@ -149,8 +154,8 @@ TTT::node* TTT::insertHelper(const string &x, node *&t, int line,
 		}
 	}
 	else {
-		ret = insertHelper(x, t->rchild(), line, distWord);
-		if(ret == t->rchild())
+		ret = insertKey(newKey, t->center);
+		if(ret == t->right)
 			return t;
 		else {
 			t = add(ret);
@@ -163,73 +168,72 @@ TTT::node* TTT::add(node *t) {
 	const string nullstring = "";
 	vector<int> emptyvec;
 	emptyvec.resize(0);
-	if(root->rkey == "") { // only one key
-		if(root->lkey.compare(t->getlkey()) < 0) {
-			root->rkey = t->getlkey();
-			/*cout << "rkey: " << root->rkey << endl;
-			cout << "lkey: " << root->lkey << endl;
-			vector<int> tval = t->getlval();
-			cout << "t rval: " << tval[0] << endl;*/
-			root->rval = t->getlval();
-			root->center = t->lchild();
-			root->right = t->cchild();
+	if(root->rkey == NULL) { // only one key add here
+		if(root->lkey->word < t->lkey->word) {
+			root->rkey = t->lkey;
+			root->center = t->left;
+			root->right = t->center;
 		}
 		else {
 			root->rkey = root->lkey;
-			root->rval = root->lval;
 			root->right = root->center;
-			root->lkey = t->getlkey();
-			root->lval = t->getlval();
-			root->center = t->cchild();
+			root->lkey = t->lkey;
+			root->center = t->center;
 		}
 		return root;
 	}
-	else if(root->lkey.compare(t->getlkey()) >= 0) { // Add left
-		node* newNode = new node(root->lkey, root->lval,
-								 nullstring, emptyvec, t, root, NULL);
-		t->setlchild(root->lchild());
-		root->setlchild(root->cchild());
-		root->setcchild(root->rchild());
-		root->setrchild(NULL);
-		root->setlkey(root->getrkey());
-		root->setlval(root->getrval());
-		root->setrkey("");
-		root->setrval(emptyvec);
+	else if(root->lkey->word > t->lkey->word) { // Add left
+		node* newNode = new node(root->lkey, t, NULL, root);
+	    t->left = root->left;
+		root->left = root->center;
+		root->center = root->right;
+		root->right = NULL;
+		root->lkey = root->rkey;
+		root->rkey = NULL;
 		return newNode;
 	}
-	else if(root->getrkey().compare(t->getlkey()) >= 0) { // Add center
-		t->setcchild(new node(root->rkey, root->getrval(), nullstring,
-							  emptyvec, t->cchild(), root->rchild(), NULL));
-		root->setrkey("");
-		root->setrval(emptyvec);
-		root->setrchild(NULL);
-		t->setlchild(root);
+	else if(root->rkey->word > t->lkey->word) { // Add center
+		node *newNode = new node(root->rkey, t->center, NULL, root->right);
+		t->center = newNode;
+		t->left = root;
+		root->rkey = NULL;
+		root->right = NULL;
 		return t;
 	}
 	else { // Add right
-		node *newNode = new node(t->getrkey(), t->getrval(), nullstring,
-								 emptyvec, root, t, NULL);
-		root->setrchild(NULL);
-		root->setrkey("");
-		root->setrval(emptyvec);
-		t->setlchild(root->right);
+		node *newNode = new node(root->rkey, root, NULL, t);
+		t->left = root->right;
+		root->right = NULL;
+		root->rkey = NULL;
 		return newNode;
 	}
 }
 //Used by contains() to see if a words is present or not. Will
-//give contains() a pointer to the found node so that contains()
+//give contains() a pointer tothe found node so that contains()
 //can prints the lines the word was found on.
-bool TTT::containsHelper(const string & x, node * t, node * &result) const{
-	/*	if (t == NULL)
-		return false;
-	if (t->key.compare(x) == 0){
-	    result = t;
- 	    return true;
+bool TTT::containsHelper(const string &x, node *t, key *&result) const{
+	if (t == NULL)
+		return 0;
+	if (t->rkey == NULL) {
+		if (x.compare(t->lkey->word) < 0)
+			return containsHelper(x, t->right, result);
+		return 0;
 	}
-	else if (x > t->key)
-		return containsHelper(x, t->right, result);
+	if (x.compare(t->lkey->word) == 0){
+	    result = t->lkey;
+ 	    return 1;
+	}
+	if (x.compare(t->lkey->word) > 0)
+		return containsHelper(x, t->right, result);	
+	if (x.compare(t->rkey->word) == 0){
+	    result = t->rkey;
+ 	    return 0;
+	}
+	if (x.compare(t->rkey->word) > 0)
+		return containsHelper(x, t->center, result);
 	else
-	return containsHelper(x, t->left, result);*/
+		return containsHelper(x, t->right, result);
+	return containsHelper(x, t->left, result);
 	return 1;
 }
 
