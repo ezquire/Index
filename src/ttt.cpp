@@ -18,14 +18,23 @@ bool TTT::isEmpty(){
 //Used to implement the search function in the main
 //program.
 void TTT::contains() const{
-	//string input;
-	//node *foundNode = NULL;
-	/*cout << "Search word: ";
+	string input;
+	node *foundNode = NULL;
+	cout << "Search word: ";
 	cin >> input;
 	if(containsHelper(input, root, foundNode)){
-	    cout << "Line Numbers: " << foundNode->lval[0]; // need to change this
-	    for(unsigned i = 1; i < foundNode->lval.size(); i++)
-			cout << ", " <<foundNode->lval[i]; 
+		key = "";
+		if (input == foundNode->lkey) {
+			key = foundNode->lkey;
+			val = foundNode->lval;
+		}
+		if (input == foundNode->rkey){
+			key = foundNode->rkey;
+			val = foundNode->rval;
+		}
+	    cout << "Line Numbers: " << foundNode->val[0];
+	    for(unsigned i = 1; i < val.size(); i++)
+			cout << ", " << val[i]; 
 	    cout << '\n';
 	}
 	else
