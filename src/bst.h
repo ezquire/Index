@@ -15,10 +15,11 @@ class BST{
     public: 
         BST();
         void contains() const;
+		bool contains(const string &x) const;
         bool isEmpty();
         void printTree(ostream & out = cout) const;
-        void buildTree(ifstream & input);
-		int getSize() { return size; }
+        void buildTree(ifstream & input, vector<string> &wordList);
+		//		int getSize() { return size; }
     private:
     struct node{
 	    node(const string &x, node *l, node *r)
@@ -31,8 +32,7 @@ class BST{
 	    vector<int> lines;
 	};
 	node * root;
-	int size = 0;
-	void insertHelper(const string &X, int line, node *& t, int &distWords);
+	void insertHelper(const string &X, vector<string> &wordList, int line, node *& t, int &distWords);
 	bool containsHelper(const string & x, node * t, node* &result) const;
 	void printTreeHelper(node *t, ostream & out) const;
 	int findHeight(node *t);

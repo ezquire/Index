@@ -248,21 +248,29 @@ void TTT::printTreeHelper(node *t, ostream & out) const{
 		return;
 	}
 	else {
-		printTreeHelper(t->left, out);
-		out << setw(30) << std::left;
+		if(t->left != NULL)
+			printTreeHelper(t->left, out);
+
+		out << setw(30) << left;
 		out << t->lkey->word << " " << t->lkey->lineNumbers[0];
+
 		for (unsigned i = 1; i < t->lkey->lineNumbers.size(); ++i)
 			out << ", " << t->lkey->lineNumbers[i];
 		out << endl;
-		printTreeHelper(t->center, out);
-		if(t->rkey != NULL){
-			out << setw(30) << std::left;
+
+		if(t->center != NULL)
+			printTreeHelper(t->center, out);
+
+		if(t->rkey != NULL) {
+			out << setw(30) << left;
 			out << t->rkey->word << " " << t->rkey->lineNumbers[0];
 			for (unsigned i = 1; i < t->rkey->lineNumbers.size(); ++i)
 				out << ", " << t->rkey->lineNumbers[i];
 			out << endl;
 		}
-		printTreeHelper(t->right, out);
+
+		if(t->right != NULL)
+			printTreeHelper(t->right, out);
 	}
 }
 

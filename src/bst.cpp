@@ -32,6 +32,11 @@ void BST::contains() const{
 	    cout << '\"' << input <<"\" is not in the document\n";
 }
 
+bool BST::contains(const string &x) const {
+	node *result;
+	return containsHelper(x, root, result);
+}
+
 //Prints the index to the supplied receiver, either
 //cout or the output file
 void BST::printTree(ostream & out) const {
@@ -41,7 +46,7 @@ void BST::printTree(ostream & out) const {
 
 //Receives the specified input file and constructs 
 //the actual tree. Prints a message when finished.
-void BST::buildTree(ifstream & input){
+void BST::buildTree(ifstream & input, vector<string> &wordList){
 	int line = 1, numWords = 0, distWords = 0, treeHeight = 0;
 	stringstream tempWord;
 	double totalTime, finishTime, startTime = clock();
@@ -66,7 +71,7 @@ void BST::buildTree(ifstream & input){
             {
                 //Once word is formatted,call insert with the word, the line of the input
                 //file it came from, the root of our tree, and the distinct word counter
-                insertHelper(tempWord, line, root, distWords);
+                insertHelper(tempWord, wordList, line, root, distWords);
                 //Increment our total number of words inserted
                 numWords++;
                 //Clear out tempWord so we can use it again
@@ -100,22 +105,22 @@ void BST::buildTree(ifstream & input){
 //the word was found at, node is the node of the tree being
 //examined, and distWord is incremented if a new word is created
 //and used by buildTree
-void BST::insertHelper(const string &x, int line, node *& t, int &distWord){
+void BST::insertHelper(const string &x, vector<string> &wordList, int line, node *& t, int &distWord){
     if(t == NULL){
 	    t = new node(x, NULL, NULL);
 	    t->lines.push_back(line);
-		size++;
+		wordList.push_back(x);
 	    distWord++;
     }
     else {
 	if (x.compare(t->key) > 0)
-   	    insertHelper(x, line, t->right, distWord);
+   	    insertHelper(x, wordList, line, t->right, distWord);
         //If word is already in tree, then add the line the inserted word
         //came from the the nodes lines vector
 	else if (x.compare(t->key) == 0)
 	    t->lines.push_back(line);
 	else
-	    insertHelper(x, line, t->left, distWord);
+	    insertHelper(x, wordList, line, t->left, distWord);
 			
     }
 }
