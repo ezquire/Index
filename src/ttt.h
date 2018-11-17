@@ -49,7 +49,6 @@ class TTT {
 	void buildTree(ifstream &input);
  private:
 	node* root;
-	int words = 0;
 	node* insertNode(const string &x, node *&t, int line, int &distWords);
 	node* insertKey(key *k, node *&t);
 	node* add(node *t, node *rt);
