@@ -18,24 +18,29 @@ bool TTT::isEmpty(){
 //Used to implement the search function in the main
 //program.
 void TTT::contains() const{
-	//string input;
-	//node *foundNode = NULL;
-	/*cout << "Search word: ";
+	string input;
+	key *foundNode = NULL;
+	cout << "Search word: ";
 	cin >> input;
 	if(containsHelper(input, root, foundNode)){
-	    cout << "Line Numbers: " << foundNode->lval[0]; // need to change this
-	    for(unsigned i = 1; i < foundNode->lval.size(); i++)
-			cout << ", " <<foundNode->lval[i]; 
-	    cout << '\n';
+	    cout << "Line Numbers: " << foundNode->lineNumbers[0];
+		for(unsigned i = 1; i < foundNode->lineNumbers.size(); ++i)
+			cout << ", " << foundNode->lineNumbers[i];
+		cout << '\n';
 	}
 	else
-	cout << '\"' << input <<"\" is not in the document\n";*/
+	cout << '\"' << input <<"\" is not in the document\n";
+}
+
+bool TTT::contains(const string &x) const {
+	key *result;
+	return containsHelper(x, root, result);
 }
 
 //Prints the index to the supplied receiver, either
 //cout or the output file
 void TTT::printTree(ostream & out) const {
-	out << "Binary Search Tree Index:\n-------------------------\n";
+	out << "Two-Three Tree Index:\n-------------------------\n";
 	printTreeHelper(root, out);
 }
 
@@ -65,8 +70,7 @@ void TTT::buildTree(ifstream & input){
 				  !isalnum(tempWord[tempWord.length() - 1]))
 			    tempWord.resize(tempWord.size() -1);   
 			
-            if (tempWord.length() > 0)
-				{
+            if (tempWord.length() > 0) {
 					//Once word is formatted,call insert with the word,
 					//the line of the input file it came from, the root of our
 					// tree, and the distinct word counter
@@ -77,7 +81,6 @@ void TTT::buildTree(ifstream & input){
 					//Clear out tempWord so we can use it again
 					tempWord.clear();
 				}
-			
 		}
 		line++;
 	}
@@ -101,37 +104,38 @@ void TTT::buildTree(ifstream & input){
  
 }
 
-TTT::node* TTT::insertNode(const string &x, node *&t, int line, int &distWord) {
+node* TTT::insertNode(const string &x, node *&t, int line, int &distWord) {
 	key* newKey;
-	if (containsHelper(x, t, newKey)){
+	if (containsHelper(x, t, newKey)) {
 		newKey->lineNumbers.push_back(line);
 		return t;
 	}
 	else {
-		distWord++;
-		key *k = new key(x);
-		k->lineNumbers.push_back(line);
-		return insertKey(k, t);
+		newKey = new key(x);
+		newKey->lineNumbers.push_back(line);
+		++distWord;
+		return insertKey(newKey, t);
 	}
-
 }
 
-TTT::node* TTT::insertKey(key *newKey, node *&t) {	
+node* TTT::insertKey(key *newKey, node *&t) {	
 	node *ret;
-	if(t == NULL) {
+	if(t == NULL)
 		return new node(newKey, NULL, NULL, NULL);
-    }
-	if(t->isLeaf()) { // at leaf insert here
-		t = add(new node(newKey, NULL, NULL, NULL));
+
+	// at leaf insert
+	if(t->isLeaf()) {
+		t = add(new node(newKey, NULL, NULL, NULL), t);
 		return t;
 	}
+
 	// add to internal node
-	if(newKey->word.compare(t->lkey->word) < 0) { // insert left
+	if(newKey->word < t->lkey->word) { // insert left
 		ret = insertKey(newKey, t->left);
 		if(ret == t->left)
 			return t;
 		else {
-			t = add(ret);
+			t = add(ret, t);
 			return t;
 		}
 	}
@@ -140,71 +144,68 @@ TTT::node* TTT::insertKey(key *newKey, node *&t) {
 		if(ret == t->right)
 			return t;
 		else {
-			t = add(ret);
+			t = add(ret, t);
 			return t;
 		}
 	}
-	else if(newKey->word.compare(t->rkey->word) < 0) {
+	else if(newKey->word < t->rkey->word) {
 		ret = insertKey(newKey, t->center);
 		if(ret == t->center)
 			return t;
 		else {
-			t = add(ret);
+			t = add(ret, t);
 			return t;
 		}
 	}
-	else {
-		ret = insertKey(newKey, t->center);
+	else { // Insert right
+		ret = insertKey(newKey, t->right);
 		if(ret == t->right)
 			return t;
 		else {
-			t = add(ret);
+			t = add(ret, t);
 			return t;
 		}
 	}
 }
 
-TTT::node* TTT::add(node *t) {
-	const string nullstring = "";
-	vector<int> emptyvec;
-	emptyvec.resize(0);
-	if(root->rkey == NULL) { // only one key add here
-		if(root->lkey->word < t->lkey->word) {
-			root->rkey = t->lkey;
-			root->center = t->left;
-			root->right = t->center;
+node* TTT::add(node *t, node *other) {
+	if(other->rkey == NULL) { // only one key add here
+		if(other->lkey->word < t->lkey->word) {
+			other->rkey = t->lkey;
+			other->center = t->left;
+			other->right = t->center;
 		}
 		else {
-			root->rkey = root->lkey;
-			root->right = root->center;
-			root->lkey = t->lkey;
-			root->center = t->center;
+			other->rkey = other->lkey;
+			other->right = other->center;
+			other->lkey = t->lkey;
+			other->center = t->center;
 		}
-		return root;
+		return other;
 	}
-	else if(root->lkey->word > t->lkey->word) { // Add left
-		node* newNode = new node(root->lkey, t, NULL, root);
-	    t->left = root->left;
-		root->left = root->center;
-		root->center = root->right;
-		root->right = NULL;
-		root->lkey = root->rkey;
-		root->rkey = NULL;
+	else if(other->lkey->word > t->lkey->word) { // Add left
+		node* newNode = new node(other->lkey, t, NULL, other);
+	    t->left = other->left;
+		other->left = other->center;
+		other->center = other->right;
+		other->right = NULL;
+		other->lkey = other->rkey;
+		other->rkey = NULL;
 		return newNode;
 	}
-	else if(root->rkey->word > t->lkey->word) { // Add center
-		node *newNode = new node(root->rkey, t->center, NULL, root->right);
+	else if(other->rkey->word > t->lkey->word) { // Add center
+		node *newNode = new node(other->rkey, t->center, NULL, other->right);
 		t->center = newNode;
-		t->left = root;
-		root->rkey = NULL;
-		root->right = NULL;
+		t->left = other;
+		other->rkey = NULL;
+		other->right = NULL;
 		return t;
 	}
 	else { // Add right
-		node *newNode = new node(root->rkey, root, NULL, t);
-		t->left = root->right;
-		root->right = NULL;
-		root->rkey = NULL;
+		node *newNode = new node(other->rkey, other, NULL, t);
+		t->left = other->right;
+		other->right = NULL;
+		other->rkey = NULL;
 		return newNode;
 	}
 }
@@ -212,57 +213,73 @@ TTT::node* TTT::add(node *t) {
 //give contains() a pointer tothe found node so that contains()
 //can prints the lines the word was found on.
 bool TTT::containsHelper(const string &x, node *t, key *&result) const{
+	//cout << "hit containsHelper" << endl;
 	if (t == NULL)
-		return 0;
-	if (t->rkey == NULL) {
-		if (x.compare(t->lkey->word) < 0)
-			return containsHelper(x, t->right, result);
-		return 0;
-	}
+		return false;
+
 	if (x.compare(t->lkey->word) == 0){
 	    result = t->lkey;
  	    return 1;
 	}
-	if (x.compare(t->lkey->word) > 0)
-		return containsHelper(x, t->right, result);	
+
+	if (x.compare(t->lkey->word) < 0) 
+		return containsHelper(x, t->left, result);
+
+	if(t->rkey == NULL) {
+		if(x.compare(t->lkey->word) > 0)
+			return containsHelper(x, t->right, result);
+		return 0;
+	}
+
 	if (x.compare(t->rkey->word) == 0){
 	    result = t->rkey;
- 	    return 0;
+ 	    return 1;
 	}
-	if (x.compare(t->rkey->word) > 0)
+	
+	if (x.compare(t->rkey->word) < 0)
 		return containsHelper(x, t->center, result);
 	else
 		return containsHelper(x, t->right, result);
-	return containsHelper(x, t->left, result);
-	return 1;
 }
 
 //Called by printTree(), does the actual formatted printing
 void TTT::printTreeHelper(node *t, ostream & out) const{
-	/*    if(t == NULL)
+	if(t == NULL) {
 		return;
+	}
 	else {
 		printTreeHelper(t->left, out);
 		out << setw(30) << std::left;
-		out << t->key << " " << t->lines[0];
-		for (unsigned i = 1; i < t->lines.size(); i++)
-			out << ", " << t->lines[i];
+		out << t->lkey->word << " " << t->lkey->lineNumbers[0];
+		for (unsigned i = 1; i < t->lkey->lineNumbers.size(); ++i)
+			out << ", " << t->lkey->lineNumbers[i];
 		out << endl;
+		printTreeHelper(t->center, out);
+		if(t->rkey != NULL){
+			out << setw(30) << std::left;
+			out << t->rkey->word << " " << t->rkey->lineNumbers[0];
+			for (unsigned i = 1; i < t->rkey->lineNumbers.size(); ++i)
+				out << ", " << t->rkey->lineNumbers[i];
+			out << endl;
+		}
 		printTreeHelper(t->right, out);
-		}*/
+	}
 }
 
 //Returns height of tree. If tree has only one node, height is 1    
 int TTT::findHeight(node *t){
-    /*if(t == NULL)
+    if(t == NULL)
 		return 0;
     else {
-		int leftHeight = findHeight(t->lchild());
-		int rightHeight = findHeight(t->rchild());
-		if(leftHeight > rightHeight)
-			return(leftHeight+1);
-		else 
-			return(rightHeight+1);
-			}*/
+		int left = findHeight(t->left);
+		int right = findHeight(t->right);
+		int center = findHeight(t->center);
+		if(left > center && left > right)
+			return(left + 1);
+		if(center > left && center > right)
+			return(center + 1);
+		if(right > left && right > center)
+			return(right + 1);
+	}
 	return 1;
 }

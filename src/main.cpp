@@ -3,6 +3,7 @@
 //             through the use of a BST 
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <stdlib.h>
 #include "bst.h"
@@ -99,8 +100,35 @@ int main(int argc, char* argv[]) {
 				}
 				break;
 			}
-			case 'c':
+			case 'c': {
+			    myTree.buildTree(input);
+				twoThree.buildTree(input);
+				input.close();
+
+				double time_bst, time_ttt;
+				double start, finish = clock();
+				
+				for(int i = 0; i < myTree.getSize(); ++i)
+					//myTree.contains();
+					;
+				finish = clock();
+				time_bst = (double)(finish - start)/CLOCKS_PER_SEC;
+			
+				start = finish = clock();
+				
+				for(int i = 0; i < myTree.getSize(); i++)
+					//twoThree.contains();
+					;
+				finish = clock();
+				time_ttt = (double)(finish - start)/CLOCKS_PER_SEC;
+
+				cout << setw(40) << std::left << "Total time taken by BST: ";
+				cout << time_bst << endl;
+				cout << setw(40) << std::left << "Total time taken by 2-3 ";
+				cout << "Tree: ";
+				cout << time_ttt << endl;
 				break;
+			}
 			default:
 				break;
 			}

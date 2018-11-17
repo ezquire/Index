@@ -104,6 +104,7 @@ void BST::insertHelper(const string &x, int line, node *& t, int &distWord){
     if(t == NULL){
 	    t = new node(x, NULL, NULL);
 	    t->lines.push_back(line);
+		size++;
 	    distWord++;
     }
     else {
