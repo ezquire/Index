@@ -84,7 +84,7 @@ void TTT::buildTree(ifstream & input){
 		}
 		line++;
 	}
-	/*	cout << "root->lkey: " << root->lkey->word << endl;
+	cout << "root->lkey: " << root->lkey->word << endl;
 	if(root->rkey != NULL)
 		cout << "root->rkey: " << root->rkey->word << endl;
 	if(root->left != NULL) {
@@ -104,7 +104,7 @@ void TTT::buildTree(ifstream & input){
 			cout << "root->right->lkey: " << root->right->lkey->word << endl;
 		if(root->right->rkey != NULL)
 			cout << "root->right->rkey: " << root->right->rkey->word << endl;
-			}*/
+	}
 	
 	//Do time and height calculation
 	finishTime = clock();
@@ -170,7 +170,7 @@ node* TTT::insertKey(key *newKey, node *t) {
 			return t;
 		}
 	}
-	/*	else if(newKey->word > t->rkey->word) {
+	else if(t->rkey != NULL && newKey->word < t->rkey->word) {
 		ret = insertKey(newKey, t->center);
 		if(ret == t->center)
 			return t;
@@ -178,7 +178,7 @@ node* TTT::insertKey(key *newKey, node *t) {
 			t = add(ret, t);
 			return t;
 		}
-		}*/
+	}
 	else { // Insert right
 		ret = insertKey(newKey, t->right);
 		if(ret == t->right)
@@ -195,7 +195,7 @@ node* TTT::add(node *other, node *t) {
 		if(t->lkey->word < other->lkey->word) { // insert to the right key
 			t->rkey = other->lkey;
 			t->center = other->left;
-			t->right = other->center;
+			t->right = other->center;			
 		}
 		else { // move left key to the right insert to the left key
 			t->rkey = t->lkey;
