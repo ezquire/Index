@@ -140,6 +140,7 @@ node* TTT::insertNode(const string &x, node *t, int line, int &distWord) {
 
 node* TTT::insertKey(key *newKey, node *t) {	
 	node *ret;
+	//empty tree
 	if(t == NULL)
 		return new node(newKey, NULL, NULL, NULL);
 
@@ -158,6 +159,7 @@ node* TTT::insertKey(key *newKey, node *t) {
 			return t;
 		}
 	}
+
 	else if(t->rkey == NULL) { // insert center
 		ret = insertKey(newKey, t->center);
 		if(ret == t->center)
@@ -176,9 +178,9 @@ node* TTT::insertKey(key *newKey, node *t) {
 			return t;
 		}
 	}
-	else if(newKey->word > t->rkey->word && t->right == NULL) { // insert c
-		ret = insertKey(newKey, t->center);
-		if(ret == t->center)
+	else if((t->rkey != NULL) && (newKey->word > t->rkey->word)) { // insert right
+		ret = insertKey(newKey, t->right);
+		if(ret == t->right)
 			return t;
 		else {
 			t = add(ret, t);
@@ -262,7 +264,7 @@ bool TTT::containsHelper(const string &x, node * t, int line) {
 		return containsHelper(x, t->right, line);
 }
 //Used by contains() to see if a words is present or not. Will
-//give contains() a pointer tothe found node so that contains()
+//give contains() a pointer to the found node so that contains()
 //can prints the lines the word was found on.
 bool TTT::containsHelper(const string &x, node * t, key *&result) const {
 
