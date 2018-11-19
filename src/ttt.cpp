@@ -161,7 +161,7 @@ node* TTT::insertKey(key *newKey, node *t) {
 			return t;
 		}
 	}
-	else if(t->rkey == NULL || newKey->word > t->rkey->word) { // insert center
+	else if(t->rkey == NULL) { // insert center
 		ret = insertKey(newKey, t->center);
 		if(ret == t->center)
 			return t;
@@ -170,7 +170,7 @@ node* TTT::insertKey(key *newKey, node *t) {
 			return t;
 		}
 	}
-	else if(t->rkey != NULL && newKey->word < t->rkey->word) {
+	else if(t->rkey != NULL && newKey->word < t->rkey->word) { // insert c
 		ret = insertKey(newKey, t->center);
 		if(ret == t->center)
 			return t;
@@ -179,7 +179,16 @@ node* TTT::insertKey(key *newKey, node *t) {
 			return t;
 		}
 	}
-	else { // Insert right
+	else if(newKey->word > t->rkey->word && t->right == NULL) { // insert c
+		ret = insertKey(newKey, t->center);
+		if(ret == t->center)
+			return t;
+		else {
+			t = add(ret, t);
+			return t;
+		}
+	}
+	else {// Insert right
 		ret = insertKey(newKey, t->right);
 		if(ret == t->right)
 			return t;
