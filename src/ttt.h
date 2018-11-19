@@ -52,7 +52,8 @@ class TTT {
 	node* insertNode(const string &x, node *t, int line, int &distWords);
 	node* insertKey(key *k, node *t);
 	node* add(node *other, node *t);
-	bool containsHelper(const string &x, node *t, key *&result) const;
+	bool containsHelper(const string &x, node * t, int line);
+	bool containsHelper(const string &x, node * t, key *&result) const;
 	void printTreeHelper(node *t, ostream &out) const;
 	int findHeight(node *t);
 };

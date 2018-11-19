@@ -127,11 +127,8 @@ void TTT::buildTree(ifstream & input){
 
 node* TTT::insertNode(const string &x, node *t, int line, int &distWord) {
 	key *newKey;
-	if (containsHelper(x, t, newKey)) {
-		cout << "hit here\n";
-		newKey->lineNumbers.push_back(line);
+	if (containsHelper(x, t, line))
 		return t;
-	}
 	else {
 		newKey = new key(x);
 		newKey->lineNumbers.push_back(line);
@@ -242,7 +239,32 @@ node* TTT::add(node *other, node *t) {
 //Used by contains() to see if a words is present or not. Will
 //give contains() a pointer tothe found node so that contains()
 //can prints the lines the word was found on.
-bool TTT::containsHelper(const string &x, node *t, key *&result) const{
+bool TTT::containsHelper(const string &x, node * t, int line) {
+
+	if (t == NULL)
+		return false;
+
+	if (x.compare(t->lkey->word) == 0) {
+		t->lkey->lineNumbers.push_back(line);
+ 	    return 1;
+	}
+	if(t->rkey != NULL && x.compare(t->rkey->word) == 0) {
+		t->rkey->lineNumbers.push_back(line);
+		return 1;
+	}
+	if(x.compare(t->lkey->word) < 0)
+		return containsHelper(x, t->left, line);
+	else if(t->rkey == NULL)
+		return containsHelper(x, t->center, line);
+	else if(x.compare(t->rkey->word) < 0)
+		return containsHelper(x, t->center, line);
+	else
+		return containsHelper(x, t->right, line);
+}
+//Used by contains() to see if a words is present or not. Will
+//give contains() a pointer tothe found node so that contains()
+//can prints the lines the word was found on.
+bool TTT::containsHelper(const string &x, node * t, key *&result) const {
 
 	if (t == NULL)
 		return false;
@@ -264,7 +286,6 @@ bool TTT::containsHelper(const string &x, node *t, key *&result) const{
 	else
 		return containsHelper(x, t->right, result);
 }
-
 //Called by printTree(), does the actual formatted printing
 void TTT::printTreeHelper(node *t, ostream & out) const{
 	if(t == NULL) {
