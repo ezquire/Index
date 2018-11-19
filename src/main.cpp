@@ -94,9 +94,11 @@ int main(int argc, char* argv[]) {
 						break;
 					}
 					case 4:
-						exit(1);
-					default:
-						break;
+                        return 0;
+					default:{
+						cout << "Invalid choice.  Restart program." << endl;
+						return 2;
+					}
 					}
 				}
 				break;
@@ -137,8 +139,10 @@ int main(int argc, char* argv[]) {
 					 << "Total time taken by 2-3 Tree: " << time_ttt << endl;
 				exit(1);
 			}
-			default:
-				break;
+			default: {
+				cout << "Invalid choice.  Please restart program." << endl;
+				return 2;
+			}
 			}
 		}
 	}

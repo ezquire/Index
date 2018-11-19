@@ -178,7 +178,7 @@ node* TTT::insertKey(key *newKey, node *t) {
 			return t;
 		}
 	}
-	else if((t->rkey != NULL) && (newKey->word > t->rkey->word)) { // insert right
+	else if((t->rkey != NULL) && (newKey->word > t->rkey->word) && t->center != NULL) { // insert right
 		ret = insertKey(newKey, t->right);
 		if(ret == t->right)
 			return t;
@@ -324,12 +324,16 @@ void TTT::printTreeHelper(node *t, ostream & out) const{
 int TTT::findHeight(node *t){
 	if(t == NULL)
 		return 0;
-	else {
+	else
+		return findHeight(t->left) + 1;
+
+
+	/*else {
 		int left = findHeight(t->left);
 		int center = findHeight(t->center);
 		int right = findHeight(t->right);
 	
-		if(left > center && left > right) {
+		if(left >= center && left >= right) {
 			return(left + 1);
 		}
 		else if(center > left && center > right) {
@@ -339,5 +343,5 @@ int TTT::findHeight(node *t){
 			return(right + 1);
 		else
 			return 1;
-	}
+	}*/
 }
